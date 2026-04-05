@@ -135,6 +135,10 @@ def find_templates(paths, search_path):
 
 
 def main():
+    if "--help" in sys.argv or "-h" in sys.argv:
+        print(__doc__.strip())
+        sys.exit(0)
+
     # Parse --search-path argument
     args = sys.argv[1:]
     search_path = "."

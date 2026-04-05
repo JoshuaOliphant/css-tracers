@@ -59,6 +59,10 @@ def extract_classes_from_css(css_text):
 
 
 def main():
+    if "--help" in sys.argv or "-h" in sys.argv:
+        print(__doc__.strip())
+        sys.exit(0)
+
     if len(sys.argv) < 2:
         print("Usage: css-defs <file>...", file=sys.stderr)
         sys.exit(1)

@@ -126,6 +126,10 @@ def extract_classes(source_text, filename="<unknown>"):
 
 
 def main():
+    if "--help" in sys.argv or "-h" in sys.argv:
+        print(__doc__.strip())
+        sys.exit(0)
+
     if len(sys.argv) < 2:
         print("Usage: py-refs <file>...", file=sys.stderr)
         sys.exit(1)
