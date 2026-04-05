@@ -1,0 +1,42 @@
+[project]
+name = "css-tracers"
+version = "0.1.0"
+description = "Composable unix tools for tracing CSS class usage across the full web stack"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.12"
+authors = [{ name = "Joshua Oliphant", email = "joshua.oliphant@hey.com" }]
+keywords = ["css", "jinja2", "ast", "unused-css", "dead-code"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Quality Assurance",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+    "tinycss2",
+    "jinja2",
+    "tree-sitter",
+    "tree-sitter-javascript",
+]
+
+[project.scripts]
+css-defs = "tools.css_defs:main"
+jinja-refs = "tools.jinja_refs:main"
+js-refs = "tools.js_refs:main"
+py-refs = "tools.py_refs:main"
+
+[project.urls]
+Homepage = "https://github.com/JoshuaOliphant/css-tracers"
+Issues = "https://github.com/JoshuaOliphant/css-tracers/issues"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["tools"]
+
+[dependency-groups]
+dev = ["pytest"]
