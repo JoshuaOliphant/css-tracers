@@ -8,8 +8,6 @@ import sys
 import textwrap
 from pathlib import Path
 
-import pytest
-
 FIXTURES = Path(__file__).parent / "fixtures"
 TOOL = Path(__file__).parent.parent / "tools" / "html_refs.py"
 
