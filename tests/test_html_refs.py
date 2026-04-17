@@ -137,3 +137,47 @@ def test_cli_no_args_exits_nonzero():
         text=True,
     )
     assert result.returncode != 0
+
+
+def test_cli_multi_file_accumulation():
+    """Classes from multiple files are merged, sorted, and deduplicated."""
+    fixture = FIXTURES / "sample.html"
+    # Pass the same file twice — classes should appear exactly once (deduplicated)
+    result = subprocess.run(
+        [sys.executable, str(TOOL), str(fixture), str(fixture)],
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode == 0, result.stderr
+    output_lines = result.stdout.strip().splitlines()
+    # Output must be sorted
+    assert output_lines == sorted(output_lines)
+    # Output must be deduplicated even across files
+    assert output_lines.count("nav-bar") == 1
+    assert output_lines.count("container") == 1
+
+
+def test_cli_missing_file_exits_nonzero():
+    """A missing file path causes a non-zero exit with the path in stderr."""
+    result = subprocess.run(
+        [sys.executable, str(TOOL), "/tmp/nonexistent-html-refs-test-file.html"],
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode != 0
+    assert "nonexistent-html-refs-test-file" in result.stderr
+    assert result.stdout == ""
+
+
+def test_cli_missing_file_continues_processing_other_files():
+    """A missing file does not prevent other valid files from being processed."""
+    fixture = FIXTURES / "sample.html"
+    result = subprocess.run(
+        [sys.executable, str(TOOL), "/tmp/nonexistent-html-refs-test-file.html", str(fixture)],
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode != 0
+    # Classes from the valid file must still appear in stdout
+    assert "container" in result.stdout.splitlines()
+    assert "nonexistent-html-refs-test-file" in result.stderr
