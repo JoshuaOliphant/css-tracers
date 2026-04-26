@@ -109,12 +109,10 @@ def extract_classes(source_bytes):
                     and get_text(prop, source_bytes) in ("add", "remove", "toggle", "contains")
                 ):
                     # Extract class names from arguments
-                    args = node.child_by_field_name("arguments")
-                    if args:
-                        for child in walk(args):
-                            if child.type == "string_fragment":
-                                text = get_text(child, source_bytes)
-                                classes |= extract_classes_from_classname_value(text)
+                    for child in walk(node.child_by_field_name("arguments")):
+                        if child.type == "string_fragment":
+                            text = get_text(child, source_bytes)
+                            classes |= extract_classes_from_classname_value(text)
 
         # Pattern 3: setAttribute("class", "foo bar")
         if node.type == "call_expression":
@@ -123,15 +121,14 @@ def extract_classes(source_bytes):
                 prop = func.child_by_field_name("property")
                 if prop and get_text(prop, source_bytes) == "setAttribute":
                     args = node.child_by_field_name("arguments")
-                    if args:
-                        arg_nodes = [c for c in args.children if c.type in ("string", "template_string")]
-                        if len(arg_nodes) >= 2:
-                            first_arg = get_text(arg_nodes[0], source_bytes).strip("\"'`")
-                            if first_arg == "class":
-                                for child in walk(arg_nodes[1]):
-                                    if child.type == "string_fragment":
-                                        text = get_text(child, source_bytes)
-                                        classes |= extract_classes_from_classname_value(text)
+                    arg_nodes = [c for c in args.children if c.type in ("string", "template_string")]
+                    if len(arg_nodes) >= 2:
+                        first_arg = get_text(arg_nodes[0], source_bytes).strip("\"'`")
+                        if first_arg == "class":
+                            for child in walk(arg_nodes[1]):
+                                if child.type == "string_fragment":
+                                    text = get_text(child, source_bytes)
+                                    classes |= extract_classes_from_classname_value(text)
 
         # Pattern 4: class="foo" in string literals and template literals
         # This catches HTML-in-JS patterns like innerHTML, template strings, etc.
