@@ -69,13 +69,12 @@ def extract_classes_from_ast(ast):
                 partial = open_match.group(1)
                 parts = partial.split()
                 if parts:
-                    # All but the last token are complete class names
+                    # All but the last token are complete class names; the
+                    # last token is a prefix for a dynamic class. split()
+                    # never yields empty strings, so parts[-1] is non-empty.
                     for cls in parts[:-1]:
                         static.add(cls)
-                    # The last token is a prefix for a dynamic class
-                    last = parts[-1]
-                    if last:
-                        patterns.add(f"{last}*")
+                    patterns.add(f"{parts[-1]}*")
 
                 # Scan forward for the closing quote to capture trailing classes
                 for j in range(i + 1, len(children)):
@@ -83,10 +82,8 @@ def extract_classes_from_ast(ast):
                         closing = children[j].data
                         close_match = re.match(r'([^"\']*)["\']', closing)
                         if close_match:
-                            remaining = close_match.group(1)
-                            for cls in remaining.split():
-                                if cls:
-                                    static.add(cls)
+                            for cls in close_match.group(1).split():
+                                static.add(cls)
                         break
 
     return static, patterns

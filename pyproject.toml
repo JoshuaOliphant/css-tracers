@@ -39,4 +39,20 @@ build-backend = "hatchling.build"
 packages = ["tools"]
 
 [dependency-groups]
-dev = ["pytest"]
+dev = ["pytest", "pytest-cov", "coverage"]
+
+[tool.pytest.ini_options]
+addopts = "--cov=tools --cov-report=term-missing --cov-fail-under=100"
+testpaths = ["tests"]
+
+[tool.coverage.run]
+branch = true
+source = ["tools"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "if __name__ == .__main__.:",
+]
+show_missing = true
+skip_covered = false
