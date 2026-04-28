@@ -26,6 +26,7 @@ css-defs = "tools.css_defs:main"
 jinja-refs = "tools.jinja_refs:main"
 js-refs = "tools.js_refs:main"
 py-refs = "tools.py_refs:main"
+html-refs = "tools.html_refs:main"
 
 [project.urls]
 Homepage = "https://github.com/JoshuaOliphant/css-tracers"
