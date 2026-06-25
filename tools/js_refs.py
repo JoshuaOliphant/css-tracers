@@ -43,7 +43,7 @@ def get_text(node, source):
     return source[node.start_byte:node.end_byte].decode("utf-8", errors="replace")
 
 
-def extract_classes_from_string(text):
+def extract_classes_from_html_string(text):
     """Extract CSS class names from class="" patterns in an HTML string."""
     classes = set()
     for match in re.finditer(r'class="([^"]*)"', text):
@@ -135,7 +135,7 @@ def extract_classes(source_bytes):
         if node.type == "string_fragment":
             text = get_text(node, source_bytes)
             if "class=" in text:
-                classes |= extract_classes_from_string(text)
+                classes |= extract_classes_from_html_string(text)
 
     return classes
 

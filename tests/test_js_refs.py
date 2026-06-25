@@ -7,9 +7,9 @@ def extract(src):
     return js_refs.extract_classes(src.encode("utf-8"))
 
 
-def test_extract_classes_from_string_double_and_single():
-    assert js_refs.extract_classes_from_string('<div class="a b"></div>') == {"a", "b"}
-    assert js_refs.extract_classes_from_string("<div class='c d'></div>") == {"c", "d"}
+def test_extract_classes_from_html_string_double_and_single():
+    assert js_refs.extract_classes_from_html_string('<div class="a b"></div>') == {"a", "b"}
+    assert js_refs.extract_classes_from_html_string("<div class='c d'></div>") == {"c", "d"}
 
 
 def test_extract_classes_from_classname_value_filters_js_artifacts():
@@ -70,7 +70,7 @@ def test_setattribute_with_one_argument_ignored():
 def test_class_attribute_in_innerhtml_template_double_quoted():
     # Backtick template lets inner double-quoted class attributes survive
     # as a single string_fragment, exercising the double-quoted branch
-    # in extract_classes_from_string.
+    # in extract_classes_from_html_string.
     src = 'el.innerHTML = `<span class="hl">hi</span>`;'
     assert extract(src) == {"hl"}
 

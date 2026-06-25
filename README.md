@@ -6,7 +6,7 @@ Composable unix tools for tracing CSS class usage across the full web stack: CSS
 
 Existing CSS purging tools (PurgeCSS, UnCSS, Tailwind) were built for the React/Vue/Node ecosystem. None understand Jinja2 templates, Python string construction, or template inheritance. The Python/Flask/FastAPI world is a complete blind spot.
 
-`css-tracers` fixes this with four small tools that each do one thing and compose with standard unix utilities.
+`css-tracers` fixes this with five small tools that each do one thing and compose with standard unix utilities.
 
 ## The Novel Part
 
@@ -20,6 +20,7 @@ Existing CSS purging tools (PurgeCSS, UnCSS, Tailwind) were built for the React/
 | `jinja-refs` | jinja2 AST | Class refs in Jinja2 templates |
 | `js-refs` | tree-sitter | Class refs in JavaScript |
 | `py-refs` | stdlib ast | Class-like strings in Python |
+| `html-refs` | stdlib html.parser | Class refs in plain HTML |
 
 Each tool outputs one class name per line to stdout, sorted and deduplicated. Dynamic patterns (from f-strings or Jinja2 expressions) are output as `# prefix-*` comments.
 
@@ -52,7 +53,15 @@ js-refs app/static/js/*.js
 
 # What classes does your Python generate?
 py-refs app/services/*.py app/routers/*.py
+
+# What classes do your plain HTML partials reference?
+html-refs app/templates/partials/*.html
 ```
+
+Every tool reports unreadable files (missing, a directory, not UTF-8, no
+permission) to stderr, keeps processing the remaining arguments, and exits
+non-zero if any file failed — so one bad path in a glob never discards the
+output for the rest.
 
 ## Composition
 
