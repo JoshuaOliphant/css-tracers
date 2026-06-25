@@ -73,9 +73,6 @@ def main():
         except IsADirectoryError:
             print(f"html-refs: {path}: Is a directory", file=sys.stderr)
             had_error = True
-        except PermissionError:
-            print(f"html-refs: {path}: Permission denied", file=sys.stderr)
-            had_error = True
         except UnicodeDecodeError:
             print(f"html-refs: {path}: Not valid UTF-8 text (binary file?)", file=sys.stderr)
             had_error = True
