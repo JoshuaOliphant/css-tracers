@@ -150,6 +150,7 @@ def main():
         sys.exit(1)
 
     all_classes = set()
+    had_error = False
 
     for path in sys.argv[1:]:
         try:
@@ -158,10 +159,19 @@ def main():
             all_classes |= extract_classes(source)
         except FileNotFoundError:
             print(f"js-refs: {path}: No such file", file=sys.stderr)
-            sys.exit(1)
+            had_error = True
+        except IsADirectoryError:
+            print(f"js-refs: {path}: Is a directory", file=sys.stderr)
+            had_error = True
+        except OSError as exc:
+            print(f"js-refs: {path}: {exc.strerror}", file=sys.stderr)
+            had_error = True
 
     for cls in sorted(all_classes):
         print(cls)
+
+    if had_error:
+        sys.exit(1)
 
 
 if __name__ == "__main__":

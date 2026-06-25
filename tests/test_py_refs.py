@@ -182,3 +182,48 @@ def test_main_reads_and_prints(monkeypatch, capsys, tmp_path):
     assert "alpha" in out
     assert "zeta" in out
     assert "# growth-*" in out
+
+
+def test_main_missing_file_continues_processing(monkeypatch, capsys, tmp_path):
+    good = tmp_path / "good.py"
+    good.write_text('s = "<div class=\\"real\\"></div>"\n')
+    monkeypatch.setattr("sys.argv", ["py-refs", str(tmp_path / "nope.py"), str(good)])
+    with pytest.raises(SystemExit) as exc:
+        py_refs.main()
+    assert exc.value.code == 1
+    captured = capsys.readouterr()
+    assert "real" in captured.out.splitlines()
+    assert "No such file" in captured.err
+
+
+def test_main_directory_arg_reports_error(monkeypatch, capsys, tmp_path):
+    monkeypatch.setattr("sys.argv", ["py-refs", str(tmp_path)])
+    with pytest.raises(SystemExit) as exc:
+        py_refs.main()
+    assert exc.value.code == 1
+    assert "Is a directory" in capsys.readouterr().err
+
+
+def test_main_binary_file_reports_error(monkeypatch, capsys, tmp_path):
+    blob = tmp_path / "blob.py"
+    blob.write_bytes(b"\xff\xfes = 1")
+    monkeypatch.setattr("sys.argv", ["py-refs", str(blob)])
+    with pytest.raises(SystemExit) as exc:
+        py_refs.main()
+    assert exc.value.code == 1
+    assert "Not valid UTF-8" in capsys.readouterr().err
+
+
+def test_main_generic_oserror_reports_strerror(monkeypatch, capsys, tmp_path):
+    target = tmp_path / "blocked.py"
+    target.write_text('s = "x"\n')
+
+    def boom(*args, **kwargs):
+        raise PermissionError(13, "Permission denied")
+
+    monkeypatch.setattr("builtins.open", boom)
+    monkeypatch.setattr("sys.argv", ["py-refs", str(target)])
+    with pytest.raises(SystemExit) as exc:
+        py_refs.main()
+    assert exc.value.code == 1
+    assert "Permission denied" in capsys.readouterr().err

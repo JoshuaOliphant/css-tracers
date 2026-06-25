@@ -68,18 +68,31 @@ def main():
         sys.exit(1)
 
     all_classes = set()
+    had_error = False
 
     for path in sys.argv[1:]:
         try:
-            with open(path) as f:
+            with open(path, encoding="utf-8") as f:
                 css_text = f.read()
             all_classes |= extract_classes_from_css(css_text)
         except FileNotFoundError:
             print(f"css-defs: {path}: No such file", file=sys.stderr)
-            sys.exit(1)
+            had_error = True
+        except IsADirectoryError:
+            print(f"css-defs: {path}: Is a directory", file=sys.stderr)
+            had_error = True
+        except UnicodeDecodeError:
+            print(f"css-defs: {path}: Not valid UTF-8 text (binary file?)", file=sys.stderr)
+            had_error = True
+        except OSError as exc:
+            print(f"css-defs: {path}: {exc.strerror}", file=sys.stderr)
+            had_error = True
 
     for cls in sorted(all_classes):
         print(cls)
+
+    if had_error:
+        sys.exit(1)
 
 
 if __name__ == "__main__":
