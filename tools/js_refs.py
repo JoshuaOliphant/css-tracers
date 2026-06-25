@@ -43,7 +43,7 @@ def get_text(node, source):
     return source[node.start_byte:node.end_byte].decode("utf-8", errors="replace")
 
 
-def extract_classes_from_string(text):
+def extract_classes_from_html_string(text):
     """Extract CSS class names from class="" patterns in an HTML string."""
     classes = set()
     for match in re.finditer(r'class="([^"]*)"', text):
@@ -135,7 +135,7 @@ def extract_classes(source_bytes):
         if node.type == "string_fragment":
             text = get_text(node, source_bytes)
             if "class=" in text:
-                classes |= extract_classes_from_string(text)
+                classes |= extract_classes_from_html_string(text)
 
     return classes
 
@@ -150,6 +150,7 @@ def main():
         sys.exit(1)
 
     all_classes = set()
+    had_error = False
 
     for path in sys.argv[1:]:
         try:
@@ -158,10 +159,19 @@ def main():
             all_classes |= extract_classes(source)
         except FileNotFoundError:
             print(f"js-refs: {path}: No such file", file=sys.stderr)
-            sys.exit(1)
+            had_error = True
+        except IsADirectoryError:
+            print(f"js-refs: {path}: Is a directory", file=sys.stderr)
+            had_error = True
+        except OSError as exc:
+            print(f"js-refs: {path}: {exc}", file=sys.stderr)
+            had_error = True
 
     for cls in sorted(all_classes):
         print(cls)
+
+    if had_error:
+        sys.exit(1)
 
 
 if __name__ == "__main__":

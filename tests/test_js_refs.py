@@ -7,9 +7,9 @@ def extract(src):
     return js_refs.extract_classes(src.encode("utf-8"))
 
 
-def test_extract_classes_from_string_double_and_single():
-    assert js_refs.extract_classes_from_string('<div class="a b"></div>') == {"a", "b"}
-    assert js_refs.extract_classes_from_string("<div class='c d'></div>") == {"c", "d"}
+def test_extract_classes_from_html_string_double_and_single():
+    assert js_refs.extract_classes_from_html_string('<div class="a b"></div>') == {"a", "b"}
+    assert js_refs.extract_classes_from_html_string("<div class='c d'></div>") == {"c", "d"}
 
 
 def test_extract_classes_from_classname_value_filters_js_artifacts():
@@ -70,7 +70,7 @@ def test_setattribute_with_one_argument_ignored():
 def test_class_attribute_in_innerhtml_template_double_quoted():
     # Backtick template lets inner double-quoted class attributes survive
     # as a single string_fragment, exercising the double-quoted branch
-    # in extract_classes_from_string.
+    # in extract_classes_from_html_string.
     src = 'el.innerHTML = `<span class="hl">hi</span>`;'
     assert extract(src) == {"hl"}
 
@@ -149,3 +149,42 @@ def test_main_reads_and_prints(monkeypatch, capsys, tmp_path):
     monkeypatch.setattr("sys.argv", ["js-refs", str(f)])
     js_refs.main()
     assert capsys.readouterr().out.splitlines() == ["a", "m", "z"]
+
+
+def test_main_missing_file_continues_processing(monkeypatch, capsys, tmp_path):
+    good = tmp_path / "good.js"
+    good.write_text('el.className = "real";')
+    monkeypatch.setattr("sys.argv", ["js-refs", str(tmp_path / "nope.js"), str(good)])
+    with pytest.raises(SystemExit) as exc:
+        js_refs.main()
+    assert exc.value.code == 1
+    captured = capsys.readouterr()
+    assert "real" in captured.out.splitlines()
+    assert "No such file" in captured.err
+
+
+def test_main_directory_arg_reports_error(monkeypatch, capsys, tmp_path):
+    monkeypatch.setattr("sys.argv", ["js-refs", str(tmp_path)])
+    with pytest.raises(SystemExit) as exc:
+        js_refs.main()
+    assert exc.value.code == 1
+    assert "Is a directory" in capsys.readouterr().err
+
+
+def test_main_generic_oserror_reports_message(monkeypatch, capsys, tmp_path):
+    target = tmp_path / "blocked.js"
+    target.write_text('el.className = "real";')
+
+    # An OSError carrying no errno has strerror=None; the message must still
+    # be reported (str(exc)), never the literal "None".
+    def boom(*args, **kwargs):
+        raise OSError("simulated read failure")
+
+    monkeypatch.setattr("builtins.open", boom)
+    monkeypatch.setattr("sys.argv", ["js-refs", str(target)])
+    with pytest.raises(SystemExit) as exc:
+        js_refs.main()
+    assert exc.value.code == 1
+    err = capsys.readouterr().err
+    assert "simulated read failure" in err
+    assert "None" not in err

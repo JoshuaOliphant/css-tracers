@@ -136,23 +136,36 @@ def main():
 
     all_static = set()
     all_patterns = set()
+    had_error = False
 
     for path in sys.argv[1:]:
         try:
-            with open(path) as f:
+            with open(path, encoding="utf-8") as f:
                 source = f.read()
             static, patterns = extract_classes(source, filename=path)
             all_static |= static
             all_patterns |= patterns
         except FileNotFoundError:
             print(f"py-refs: {path}: No such file", file=sys.stderr)
-            sys.exit(1)
+            had_error = True
+        except IsADirectoryError:
+            print(f"py-refs: {path}: Is a directory", file=sys.stderr)
+            had_error = True
+        except UnicodeDecodeError:
+            print(f"py-refs: {path}: Not valid UTF-8 text (binary file?)", file=sys.stderr)
+            had_error = True
+        except OSError as exc:
+            print(f"py-refs: {path}: {exc}", file=sys.stderr)
+            had_error = True
 
     for cls in sorted(all_static):
         print(cls)
 
     for pat in sorted(all_patterns):
         print(f"# {pat}")
+
+    if had_error:
+        sys.exit(1)
 
 
 if __name__ == "__main__":
