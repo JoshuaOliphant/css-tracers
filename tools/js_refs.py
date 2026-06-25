@@ -164,7 +164,7 @@ def main():
             print(f"js-refs: {path}: Is a directory", file=sys.stderr)
             had_error = True
         except OSError as exc:
-            print(f"js-refs: {path}: {exc.strerror}", file=sys.stderr)
+            print(f"js-refs: {path}: {exc}", file=sys.stderr)
             had_error = True
 
     for cls in sorted(all_classes):

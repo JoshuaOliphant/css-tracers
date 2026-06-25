@@ -58,10 +58,10 @@ py-refs app/services/*.py app/routers/*.py
 html-refs app/templates/partials/*.html
 ```
 
-Every tool reports unreadable files (missing, a directory, not UTF-8, no
-permission) to stderr, keeps processing the remaining arguments, and exits
-non-zero if any file failed — so one bad path in a glob never discards the
-output for the rest.
+Every tool reports a file it can't read (missing, a directory, permission
+denied, or — for the text-based parsers — not valid UTF-8) to stderr, keeps
+processing the remaining arguments, and exits non-zero if any file failed — so
+one bad path in a glob never discards the output for the rest.
 
 ## Composition
 

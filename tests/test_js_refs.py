@@ -171,16 +171,20 @@ def test_main_directory_arg_reports_error(monkeypatch, capsys, tmp_path):
     assert "Is a directory" in capsys.readouterr().err
 
 
-def test_main_generic_oserror_reports_strerror(monkeypatch, capsys, tmp_path):
+def test_main_generic_oserror_reports_message(monkeypatch, capsys, tmp_path):
     target = tmp_path / "blocked.js"
     target.write_text('el.className = "real";')
 
+    # An OSError carrying no errno has strerror=None; the message must still
+    # be reported (str(exc)), never the literal "None".
     def boom(*args, **kwargs):
-        raise PermissionError(13, "Permission denied")
+        raise OSError("simulated read failure")
 
     monkeypatch.setattr("builtins.open", boom)
     monkeypatch.setattr("sys.argv", ["js-refs", str(target)])
     with pytest.raises(SystemExit) as exc:
         js_refs.main()
     assert exc.value.code == 1
-    assert "Permission denied" in capsys.readouterr().err
+    err = capsys.readouterr().err
+    assert "simulated read failure" in err
+    assert "None" not in err

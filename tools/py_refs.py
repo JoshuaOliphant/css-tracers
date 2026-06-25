@@ -155,7 +155,7 @@ def main():
             print(f"py-refs: {path}: Not valid UTF-8 text (binary file?)", file=sys.stderr)
             had_error = True
         except OSError as exc:
-            print(f"py-refs: {path}: {exc.strerror}", file=sys.stderr)
+            print(f"py-refs: {path}: {exc}", file=sys.stderr)
             had_error = True
 
     for cls in sorted(all_static):

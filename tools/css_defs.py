@@ -85,7 +85,7 @@ def main():
             print(f"css-defs: {path}: Not valid UTF-8 text (binary file?)", file=sys.stderr)
             had_error = True
         except OSError as exc:
-            print(f"css-defs: {path}: {exc.strerror}", file=sys.stderr)
+            print(f"css-defs: {path}: {exc}", file=sys.stderr)
             had_error = True
 
     for cls in sorted(all_classes):

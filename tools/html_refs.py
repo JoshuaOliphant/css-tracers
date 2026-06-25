@@ -77,7 +77,7 @@ def main():
             print(f"html-refs: {path}: Not valid UTF-8 text (binary file?)", file=sys.stderr)
             had_error = True
         except OSError as exc:
-            print(f"html-refs: {path}: {exc.strerror}", file=sys.stderr)
+            print(f"html-refs: {path}: {exc}", file=sys.stderr)
             had_error = True
 
     for cls in sorted(all_classes):

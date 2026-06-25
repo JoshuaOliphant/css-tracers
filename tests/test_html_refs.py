@@ -205,17 +205,20 @@ def test_cli_binary_file_reports_error(monkeypatch, capsys, tmp_path):
     assert "Not valid UTF-8" in capsys.readouterr().err
 
 
-def test_cli_generic_oserror_reports_strerror(monkeypatch, capsys, tmp_path):
-    """A generic OSError (e.g. permission denied) is reported via its strerror."""
+def test_cli_generic_oserror_reports_message(monkeypatch, capsys, tmp_path):
+    """A generic OSError with no errno is reported by message, never as 'None'."""
     target = tmp_path / "blocked.html"
     target.write_text("<div class='x'></div>")
 
+    # strerror is None when the OSError carries no errno; str(exc) must be used.
     def boom(*args, **kwargs):
-        raise PermissionError(13, "Permission denied")
+        raise OSError("simulated read failure")
 
     monkeypatch.setattr("builtins.open", boom)
     monkeypatch.setattr("sys.argv", ["html-refs", str(target)])
     with pytest.raises(SystemExit) as exc:
         html_refs.main()
     assert exc.value.code == 1
-    assert "Permission denied" in capsys.readouterr().err
+    err = capsys.readouterr().err
+    assert "simulated read failure" in err
+    assert "None" not in err
