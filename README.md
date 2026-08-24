@@ -35,7 +35,7 @@ git clone https://github.com/JoshuaOliphant/css-tracers.git
 cd css-tracers
 uv tool install .
 
-# No install needed (standalone scripts)
+# From a clone, with no install step
 uv run --script tools/css_defs.py app/static/css/*.css
 ```
 
@@ -89,7 +89,7 @@ jinja-refs --search-path app/templates app/templates/index.html
 ## Design Principles
 
 - **Unix philosophy**: each tool does one thing, outputs newline-delimited class names to stdout
-- **PEP 723 scripts**: each tool is a single Python file with inline dependency declarations, runnable via `uv run --script`
+- **PEP 723 scripts**: each tool declares its dependencies inline and runs via `uv run --script` from a clone. The tools share a command-line driver (`tools/tracer.py`), so a tool file is not self-contained on its own — see [docs/adr/0001-shared-driver-and-standalone-scripts.md](docs/adr/0001-shared-driver-and-standalone-scripts.md)
 - **No configuration**: tools take file paths as arguments, nothing else
 - **Err toward false positives in refs**: better to report a class as "used" than miss it
 
