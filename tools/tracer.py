@@ -19,7 +19,11 @@ def _open(path, binary):
 
 
 def run(*, name, doc, extract, binary=False):
-    """Run one tracer tool over the paths in sys.argv."""
+    """Run one tracer tool over the paths in sys.argv.
+
+    ``extract`` takes one file's contents — text, or bytes when ``binary`` —
+    and returns the set of class names found in it.
+    """
     if "--help" in sys.argv or "-h" in sys.argv:
         print(doc.strip())
         sys.exit(0)
