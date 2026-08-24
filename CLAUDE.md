@@ -48,3 +48,13 @@ If a piece of code is hard to cover with a test, treat that as a signal to
 refactor — extract a pure function, drop a defensive guard that can never
 fire, or simplify the control flow. Reach for the test first; only then
 consider whether the code itself should change.
+
+## Agent skills
+
+### Issue tracker
+
+Issues live in this repo's GitHub Issues, driven with the `gh` CLI. See `docs/agents/issue-tracker.md`.
+
+### Domain docs
+
+Single-context: `CONTEXT.md` at the repo root, ADRs under `docs/adr/`. See `docs/agents/domain.md`.
