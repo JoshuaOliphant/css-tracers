@@ -1,7 +1,10 @@
 #!/usr/bin/env -S uv run --script
 # /// script
 # requires-python = ">=3.12"
-# dependencies = ["jinja2"]
+# dependencies = ["css-tracers"]
+#
+# [tool.uv.sources]
+# css-tracers = { path = "../", editable = true }
 # ///
 # ABOUTME: Extract CSS class names referenced in Jinja2 templates via AST walk.
 # ABOUTME: Outputs one class name per line, with dynamic expressions as prefix patterns.
@@ -30,6 +33,8 @@ import jinja2
 import jinja2.meta
 from jinja2 import nodes
 
+from tools.class_attrs import scan_class_attrs
+
 
 def extract_classes_from_ast(ast):
     """Extract CSS class names from a parsed Jinja2 AST.
@@ -49,15 +54,7 @@ def extract_classes_from_ast(ast):
 
             text = child.data
 
-            # Extract complete class="..." attributes within this text node
-            for match in re.finditer(r'class="([^"]*)"', text):
-                for cls in match.group(1).split():
-                    static.add(cls)
-
-            # Also check single-quoted class attributes
-            for match in re.finditer(r"class='([^']*)'", text):
-                for cls in match.group(1).split():
-                    static.add(cls)
+            static |= scan_class_attrs(text)
 
             # Detect class attributes split across nodes (dynamic classes)
             # Pattern: class="prefix-  followed by a Jinja2 expression

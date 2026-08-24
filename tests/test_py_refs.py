@@ -3,11 +3,6 @@ import pytest
 from tools import py_refs
 
 
-def test_extract_classes_from_html_string_double_and_single():
-    assert py_refs.extract_classes_from_html_string('<div class="a b"></div>') == {"a", "b"}
-    assert py_refs.extract_classes_from_html_string("<div class='c d'></div>") == {"c", "d"}
-
-
 def test_string_constant_with_class_attribute():
     src = 's = "<div class=\\"foo bar\\"></div>"'
     static, patterns = py_refs.extract_classes(src)

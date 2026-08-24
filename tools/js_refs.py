@@ -1,7 +1,10 @@
 #!/usr/bin/env -S uv run --script
 # /// script
 # requires-python = ">=3.12"
-# dependencies = ["tree-sitter", "tree-sitter-javascript"]
+# dependencies = ["css-tracers"]
+#
+# [tool.uv.sources]
+# css-tracers = { path = "../", editable = true }
 # ///
 # ABOUTME: Extract CSS class names referenced in JavaScript files via tree-sitter AST.
 # ABOUTME: Handles className assignments, classList operations, and class="" in string literals.
@@ -21,11 +24,12 @@ Parses JavaScript with tree-sitter and extracts CSS class names from:
 Outputs one class name per line to stdout, sorted and deduplicated.
 """
 
-import re
 import sys
 
 import tree_sitter_javascript as tsjs
 from tree_sitter import Language, Parser
+
+from tools.class_attrs import scan_class_attrs
 
 
 JS_LANGUAGE = Language(tsjs.language())
@@ -41,18 +45,6 @@ def walk(node):
 def get_text(node, source):
     """Get the source text for a node."""
     return source[node.start_byte:node.end_byte].decode("utf-8", errors="replace")
-
-
-def extract_classes_from_html_string(text):
-    """Extract CSS class names from class="" patterns in an HTML string."""
-    classes = set()
-    for match in re.finditer(r'class="([^"]*)"', text):
-        for cls in match.group(1).split():
-            classes.add(cls)
-    for match in re.finditer(r"class='([^']*)'", text):
-        for cls in match.group(1).split():
-            classes.add(cls)
-    return classes
 
 
 def extract_classes_from_classname_value(text):
@@ -135,7 +127,7 @@ def extract_classes(source_bytes):
         if node.type == "string_fragment":
             text = get_text(node, source_bytes)
             if "class=" in text:
-                classes |= extract_classes_from_html_string(text)
+                classes |= scan_class_attrs(text)
 
     return classes
 
