@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pytest
 import jinja2
 
@@ -9,16 +11,20 @@ def parse(source):
     return env.parse(source)
 
 
-def test_static_double_quoted():
+def test_static_classes_come_from_template_data():
     static, patterns = jinja_refs.extract_classes_from_ast(parse('<div class="a b c"></div>'))
     assert static == {"a", "b", "c"}
     assert patterns == set()
 
 
-def test_static_single_quoted():
-    static, patterns = jinja_refs.extract_classes_from_ast(parse("<div class='x y'></div>"))
-    assert static == {"x", "y"}
-    assert patterns == set()
+def test_fixture_template_classes():
+    source = (Path(__file__).parent / "fixtures" / "sample.jinja").read_text()
+    static, patterns = jinja_refs.extract_classes_from_ast(parse(source))
+    assert static == {
+        "container", "highlighted", "nav-link", "nav-list", "nav-list--wide",
+        "post", "post-title",
+    }
+    assert patterns == {"growth-*", "nav-item*"}
 
 
 def test_dynamic_double_quoted_prefix():

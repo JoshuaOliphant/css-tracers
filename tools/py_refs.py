@@ -1,7 +1,10 @@
 #!/usr/bin/env -S uv run --script
 # /// script
 # requires-python = ">=3.12"
-# dependencies = []
+# dependencies = ["css-tracers"]
+#
+# [tool.uv.sources]
+# css-tracers = { path = "..", editable = true }
 # ///
 # ABOUTME: Extract CSS class names referenced in Python files via stdlib ast.
 # ABOUTME: Finds class="" in HTML strings, f-string class patterns, and known generators.
@@ -25,17 +28,7 @@ import ast
 import re
 import sys
 
-
-def extract_classes_from_html_string(text):
-    """Extract CSS class names from class="" patterns in HTML strings."""
-    classes = set()
-    for match in re.finditer(r'class="([^"]*)"', text):
-        for cls in match.group(1).split():
-            classes.add(cls)
-    for match in re.finditer(r"class='([^']*)'", text):
-        for cls in match.group(1).split():
-            classes.add(cls)
-    return classes
+from tools.class_attrs import scan_class_attrs
 
 
 class CSSClassVisitor(ast.NodeVisitor):
@@ -48,7 +41,7 @@ class CSSClassVisitor(ast.NodeVisitor):
     def visit_Constant(self, node):
         """Check string constants for class="" patterns (HTML in Python)."""
         if isinstance(node.value, str) and "class=" in node.value:
-            self.static_classes |= extract_classes_from_html_string(node.value)
+            self.static_classes |= scan_class_attrs(node.value)
         self.generic_visit(node)
 
     def visit_JoinedStr(self, node):
@@ -71,7 +64,7 @@ class CSSClassVisitor(ast.NodeVisitor):
 
         # Check for class="" in the reconstructed f-string
         if "class=" in full_text:
-            self.static_classes |= extract_classes_from_html_string(full_text)
+            self.static_classes |= scan_class_attrs(full_text)
 
         # Check for CSS prefix patterns like f"growth-{expr}"
         # Walk through parts looking for string ending with prefix + expression

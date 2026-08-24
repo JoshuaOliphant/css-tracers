@@ -36,12 +36,15 @@ the canonical command — both locally and in CI.
 ## Project layout
 
 - `tools/` — the five tools (`css_defs`, `html_refs`, `jinja_refs`, `js_refs`,
-  `py_refs`) plus `tracer`, the command-line driver they share. Each tool is a
-  single module exposing a `main()` entry point and the pure functions it
-  composes. Tests should target the pure functions directly, then drive
-  `main()` through `monkeypatch.setattr("sys.argv", ...)` for the CLI surface.
-- `tests/` — one `test_<tool>.py` per tool, plus `test_tracer.py` for the
-  driver. Keep them organized that way.
+  `py_refs`) plus the modules they share: `tracer`, the command-line driver,
+  and `class_attrs`, the class-attribute scanner. Each tool is a single module
+  exposing a `main()` entry point and the pure functions it composes. Tests
+  should target the pure functions directly, then drive `main()` through
+  `monkeypatch.setattr("sys.argv", ...)` for the CLI surface.
+- `tests/` — one `test_<tool>.py` per tool, plus one per shared module
+  (`test_tracer.py`, `test_class_attrs.py`). Keep them organized that way, and
+  keep a shared rule's tests with the shared module rather than repeating them
+  in every tool that calls it.
 
 ## Writing testable code
 
