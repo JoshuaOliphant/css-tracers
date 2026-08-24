@@ -3,9 +3,9 @@
 
 """The class-attribute scanner.
 
-`js-refs`, `py-refs` and `jinja-refs` all meet HTML as raw text: embedded in a
-JavaScript string, embedded in a Python string, or sitting in a Jinja2
-`TemplateData` node. This module owns the one rule they share — read the class
+Some tools meet HTML as raw text — embedded in a JavaScript string, embedded in
+a Python string, or sitting in a Jinja2 `TemplateData` node — with no parser to
+hand them the attributes. This module owns the rule they share: read the class
 names out of a complete, quoted `class` attribute.
 """
 

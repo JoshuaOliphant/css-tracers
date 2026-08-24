@@ -1,3 +1,6 @@
+# ABOUTME: Tests for the shared class-attribute scanner.
+# ABOUTME: Covers both quoting styles, multi-class values, and empty attributes.
+
 from tools.class_attrs import scan_class_attrs
 
 

@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pytest
 import jinja2
 
@@ -9,15 +11,20 @@ def parse(source):
     return env.parse(source)
 
 
-def test_static_double_quoted():
+def test_static_classes_come_from_template_data():
     static, patterns = jinja_refs.extract_classes_from_ast(parse('<div class="a b c"></div>'))
     assert static == {"a", "b", "c"}
     assert patterns == set()
 
 
-def test_static_single_quoted():
-    static, patterns = jinja_refs.extract_classes_from_ast(parse("<div class='x y'></div>"))
-    assert static == {"x", "y"}
+def test_fixture_template_classes():
+    source = (Path(__file__).parent / "fixtures" / "sample.html").read_text()
+    static, patterns = jinja_refs.extract_classes_from_ast(parse(source))
+    assert static == {
+        "active", "container", "main-content", "nav-bar", "nav-item",
+        "nav-link", "nav-list", "post", "post-body", "post-title",
+        "site-footer", "site-header",
+    }
     assert patterns == set()
 
 

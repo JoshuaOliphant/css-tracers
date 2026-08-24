@@ -64,8 +64,7 @@ def test_setattribute_with_one_argument_ignored():
 
 def test_class_attribute_in_innerhtml_template_double_quoted():
     # Backtick template lets inner double-quoted class attributes survive
-    # as a single string_fragment, exercising the double-quoted branch
-    # in scan_class_attrs.
+    # as a single string_fragment.
     src = 'el.innerHTML = `<span class="hl">hi</span>`;'
     assert extract(src) == {"hl"}
 
