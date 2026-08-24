@@ -4,7 +4,7 @@
 # dependencies = ["css-tracers"]
 #
 # [tool.uv.sources]
-# css-tracers = { path = "../", editable = true }
+# css-tracers = { path = "..", editable = true }
 # ///
 # ABOUTME: Extract CSS class names referenced in Python files via stdlib ast.
 # ABOUTME: Finds class="" in HTML strings, f-string class patterns, and known generators.

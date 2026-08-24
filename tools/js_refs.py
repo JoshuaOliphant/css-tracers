@@ -1,10 +1,10 @@
 #!/usr/bin/env -S uv run --script
 # /// script
 # requires-python = ">=3.12"
-# dependencies = ["css-tracers"]
+# dependencies = ["tree-sitter", "tree-sitter-javascript", "css-tracers"]
 #
 # [tool.uv.sources]
-# css-tracers = { path = "../", editable = true }
+# css-tracers = { path = "..", editable = true }
 # ///
 # ABOUTME: Extract CSS class names referenced in JavaScript files via tree-sitter AST.
 # ABOUTME: Handles className assignments, classList operations, and class="" in string literals.

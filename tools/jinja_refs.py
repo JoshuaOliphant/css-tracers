@@ -1,10 +1,10 @@
 #!/usr/bin/env -S uv run --script
 # /// script
 # requires-python = ">=3.12"
-# dependencies = ["css-tracers"]
+# dependencies = ["jinja2", "css-tracers"]
 #
 # [tool.uv.sources]
-# css-tracers = { path = "../", editable = true }
+# css-tracers = { path = "..", editable = true }
 # ///
 # ABOUTME: Extract CSS class names referenced in Jinja2 templates via AST walk.
 # ABOUTME: Outputs one class name per line, with dynamic expressions as prefix patterns.
