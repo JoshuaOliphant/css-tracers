@@ -35,12 +35,13 @@ the canonical command — both locally and in CI.
 
 ## Project layout
 
-- `tools/` — the four standalone tools (`css_defs`, `jinja_refs`, `js_refs`,
-  `py_refs`). Each is a single module exposing a `main()` entry point and the
-  pure functions it composes. Tests should target the pure functions
-  directly, then drive `main()` through `monkeypatch.setattr("sys.argv", ...)`
-  for the CLI surface.
-- `tests/` — one `test_<tool>.py` per tool. Keep them organized that way.
+- `tools/` — the five tools (`css_defs`, `html_refs`, `jinja_refs`, `js_refs`,
+  `py_refs`) plus `tracer`, the command-line driver they share. Each tool is a
+  single module exposing a `main()` entry point and the pure functions it
+  composes. Tests should target the pure functions directly, then drive
+  `main()` through `monkeypatch.setattr("sys.argv", ...)` for the CLI surface.
+- `tests/` — one `test_<tool>.py` per tool, plus `test_tracer.py` for the
+  driver. Keep them organized that way.
 
 ## Writing testable code
 
