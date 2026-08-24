@@ -18,14 +18,13 @@ def test_static_classes_come_from_template_data():
 
 
 def test_fixture_template_classes():
-    source = (Path(__file__).parent / "fixtures" / "sample.html").read_text()
+    source = (Path(__file__).parent / "fixtures" / "sample.jinja").read_text()
     static, patterns = jinja_refs.extract_classes_from_ast(parse(source))
     assert static == {
-        "active", "container", "main-content", "nav-bar", "nav-item",
-        "nav-link", "nav-list", "post", "post-body", "post-title",
-        "site-footer", "site-header",
+        "container", "highlighted", "nav-link", "nav-list", "nav-list--wide",
+        "post", "post-title",
     }
-    assert patterns == set()
+    assert patterns == {"growth-*", "nav-item*"}
 
 
 def test_dynamic_double_quoted_prefix():

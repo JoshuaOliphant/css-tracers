@@ -3,10 +3,8 @@
 
 """The class-attribute scanner.
 
-Some tools meet HTML as raw text — embedded in a JavaScript string, embedded in
-a Python string, or sitting in a Jinja2 `TemplateData` node — with no parser to
-hand them the attributes. This module owns the rule they share: read the class
-names out of a complete, quoted `class` attribute.
+Some tools hold HTML as raw text with no parser in reach, so they read the
+attribute with a regex and accept what that costs in precision.
 """
 
 import re
@@ -19,10 +17,13 @@ _CLASS_ATTR_PATTERNS = (
 
 
 def scan_class_attrs(text):
-    """Return the CSS class names in every complete class="" attribute in text.
+    """Return the whitespace-separated tokens of every quoted class= value.
 
-    Both quoting styles are read, whitespace-separated names are split apart,
-    and an attribute whose closing quote is missing contributes nothing.
+    A regex, not a parser, so the tokens are not guaranteed to be class names.
+    `class=` matches without a left boundary, so `superclass="x"` yields `x`;
+    an unterminated `class="` pairs with the next quote of the same style
+    anywhere later in the text, so malformed input yields junk. Callers that
+    need exactness parse instead.
     """
     classes = set()
     for pattern in _CLASS_ATTR_PATTERNS:

@@ -37,13 +37,12 @@ def test_fstring_with_prefix_pattern():
 
 
 def test_fstring_class_attribute_with_dynamic_prefix():
-    # f-string substitution turns into "{...}" placeholder; the
-    # reconstructed text contains class="growth-{...}" which the regex
-    # treats as a static class "growth-{...}" (no whitespace splits).
-    # We only assert the prefix pattern detection works.
     src = 'stage = "x"\ns = f"<div class=\\"growth-{stage}\\">x</div>"'
     static, patterns = py_refs.extract_classes(src)
-    assert "growth-*" in patterns
+    assert patterns == {"growth-*"}
+    # The reconstructed f-string still carries the {...} placeholder, so the
+    # scanner reports it as a class name too.
+    assert static == {"growth-{...}"}
 
 
 def test_fstring_without_class_or_prefix_yields_nothing():
