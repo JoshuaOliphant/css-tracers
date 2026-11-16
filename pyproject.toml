@@ -40,7 +40,7 @@ build-backend = "hatchling.build"
 packages = ["tools"]
 
 [dependency-groups]
-dev = ["pytest", "pytest-cov", "coverage"]
+dev = ["pytest>=9.0.3", "pytest-cov", "coverage"]
 
 [tool.pytest.ini_options]
 addopts = "--cov=tools --cov-report=term-missing --cov-fail-under=100"
